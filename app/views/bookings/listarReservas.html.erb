@@ -1,0 +1,122 @@
+<%- model_class = Booking -%>
+<div class="page-header">
+  <h2>Mantenedor de reservas</h2>
+</div>
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+    <li ><a href="#confirmada" data-toggle="tab">Confirmadas</a></li>
+    <li><a href="#finalizada" data-toggle="tab">Finalizadas</a></li>
+    <li><a href="#cancelada" data-toggle="tab">Canceladas</a></li>
+  </ul>
+</div>
+
+<div class="tab-content">
+  <div class="tab-pane " id="confirmada">
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>  </th>
+          <th><%= model_class.human_attribute_name(:"fecha de reserva") %></th>
+          <th><%= model_class.human_attribute_name(:"Horas solicitadas") %></th>
+          <th><%= model_class.human_attribute_name(:"Sala n°") %></th>
+          <th><%= model_class.human_attribute_name(:"fecha envio solicitud") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @bookings.each do |booking| %>
+          <% @book = Booking.includes(:horas).find(booking.id) %>    
+          <tr>
+            <td><%= link_to booking.id, booking_path(booking) %></td>
+            <td><%= booking.fecha.day %>/<%= booking.fecha.month %>/<%= booking.fecha.year %> </td>
+            <td>
+              <% @book.horas.each do |hora| %>
+                <%= hora.startTime %> a <%= hora.endTime %></br>
+              <%end%>
+            </td>
+            <td><%= booking.room_id %></td>
+            <td><%= booking.created_at.strftime("%d /%m / %Y") %></td>
+            <td>
+              <%= link_to "Ver Solicitud", booking_path(booking), :class => 'btn btn-mini'  %>
+              
+              <%= link_to t('.actualizar', :default => t("helpers.links.actualizar")),
+                          edit_booking_path(booking), :class => 'btn btn-mini' %>
+              
+              <%= link_to 'Cancelar', cancelarSolicitud_path(booking), data: { confirm: "¿Estas seguro que deseas cancelar la solicitud para el #{booking.created_at.strftime('%d/%B/%Y')}?" }, :class => 'btn btn-mini btn-danger'%>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-pane " id="finalizada">
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>  </th>
+          <th><%= model_class.human_attribute_name(:"fecha de reserva") %></th>
+          <th><%= model_class.human_attribute_name(:"Horas solicitadas") %></th>
+          <th><%= model_class.human_attribute_name(:"Sala n°") %></th>
+          <th><%= model_class.human_attribute_name(:"fecha envio solicitud") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @finalizada.each do |booking| %>
+          <% @book = Booking.includes(:horas).find(booking.id) %>    
+          <tr>
+            <td><%= link_to booking.id, booking_path(booking) %></td>
+            <td><%= booking.fecha.day %>/<%= booking.fecha.month %>/<%= booking.fecha.year %> </td>
+            <td>
+              <% @book.horas.each do |hora| %>
+                <%= hora.startTime %> a <%= hora.endTime %></br>
+              <%end%>
+            </td>
+            <td><%= booking.room_id %></td>
+            <td><%= booking.created_at.strftime("%d /%m / %Y") %></td>
+            <td>
+              <%= link_to "Ver Solicitud", booking_path(booking), :class => 'btn btn-mini'  %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    
+  </div>
+
+    <div class="tab-pane " id="cancelada">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>  </th>
+            <th><%= model_class.human_attribute_name(:"fecha de reserva") %></th>
+            <th><%= model_class.human_attribute_name(:"Horas solicitadas") %></th>
+            <th><%= model_class.human_attribute_name(:"Sala n°") %></th>
+            <th><%= model_class.human_attribute_name(:"fecha envio solicitud") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @cancelada.each do |booking| %>
+            <% @book = Booking.includes(:horas).find(booking.id) %>    
+            <tr>
+              <td><%= link_to booking.id, booking_path(booking) %></td>
+              <td><%= booking.fecha.day %>/<%= booking.fecha.month %>/<%= booking.fecha.year %> </td>
+              <td>
+                <% @book.horas.each do |hora| %>
+                  <%= hora.startTime %> a <%= hora.endTime %></br>
+                <%end%>
+              </td>
+              <td><%= booking.room_id %></td>
+              <td><%= booking.created_at.strftime("%d /%m / %Y") %></td>
+              <td>
+                <%= link_to "Ver Solicitud", booking_path(booking), :class => 'btn btn-mini'  %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+   </div>
+</div>
+
+
+

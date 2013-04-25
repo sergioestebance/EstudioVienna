@@ -1,0 +1,17 @@
+<%= form_tag  :action =>'guardarConfirmarSolicitud' do %>
+  <div class="control-group">
+    <%= label_tag "¿Con cuanto el cliente desea confirmar?",nil, :class => 'control-label' %>
+    <div class="controls">
+      <%= text_field_tag "amount",nil ,:class => 'text_field' %>
+  </div>
+    <br />
+
+  <div class="form-actions">
+    <%= submit_tag "Confirmar Solicitud", :class =>"btn btn-primary" %>
+    <%= link_to t('.Cancelar', :default => t("helpers.links.cancel")),
+                bookings_path, :class => 'btn' %>
+  </div>
+
+<%= hidden_field_tag "id", @booking.id %>
+<% end %>
+

@@ -1,0 +1,146 @@
+<%- model_class = Booking -%>
+<div class="row">
+    <div class="page-header">
+      Estado Solicitud</br></br>
+      <% if @booking.estate == "Solicitado" %>
+        <%= image_tag( "/barra/barra1.jpg", :size => "1200X480", "alt" => "chuasmcal" )%>
+      <% elsif @booking.estate == "Confirmado" %>  
+        <%= image_tag( "/barra/barra2.jpg", :size => "1200X480", "alt" => "chuasmcal" )%>
+      <% elsif @booking.estate == "Asistido" %> 
+        <%= image_tag( "/barra/barra3.jpg", :size => "1200X480", "alt" => "chuasmcal" )%>
+      <% elsif @booking.estate == "Finalizado" %> 
+        <%= image_tag( "/barra/barra4.jpg", :size => "1200X480", "alt" => "chuasmcal" )%>
+      <%end%>
+    </div>
+  <div class="span12">
+    <div class="row">
+      <div class="span5">
+        <dl class="dl-horizontal">
+          <h5><dt><strong><%= model_class.human_attribute_name(:"fecha de reserva") %> :</strong></dt></h5>
+          <h4><dd><%= @booking.fecha %></dd></h4>
+          <h5><dt><strong><%= model_class.human_attribute_name(:"sala N°") %> :</strong></dt></h5>
+          <h4><dd><%= @booking.room_id %></dd></h4>
+
+          <h5><dt><strong><%= model_class.human_attribute_name(:"horas solicitadas") %> :</strong></dt></h5>
+          <h4><dd>
+            <% @booking.horas.each do |hora| %>
+              <p>de <%=hora.startTime %> a <%=hora.endTime %></p>
+              <% @cantidad_horas = @cantidad_horas + 1 %>
+            <%end%>
+          </dd></h4>
+        </dl>
+          <% if @booking.estate != "Finalizado" %>
+            <%= link_to t('.back', :default => t(" atras")),
+                      bookings_path, :class => 'icon-arrow-left btn'  %>
+            <%= link_to t('.edit', :default => t(" actualizar")),
+                      edit_booking_path(@booking), :class => 'icon-edit btn' %>
+            <%= link_to ' Cancelar', cancelarSolicitud_path(@booking), data: { confirm: "¿Estas seguro que deseas cancelar la solicitud para el #{@booking.created_at.strftime('%d/%B/%Y')}?" }, :class => 'active icon-trash btn btn-danger'%>
+          <%end%>
+          <hr width=75% color="#000000">
+
+          <center>Deudas</center></br>
+          <strong><% @deuda_salas = @cantidad_horas * @booking.room.price %></strong>
+          Cantidad de horas solicitadas : <%= @cantidad_horas %></br>
+          Precio hora sala : <%= @booking.room.price %></br>
+          ---------------------------------- </br>
+          <p class="text-warning">Total arriendo salas : <%= @deuda_salas %></p>
+          <% if @equipos.tools.count != 0 %>
+          </br></br>
+
+          Cantidad Equipos Solicitados : <%= @equipos.tools.count %></br>
+          ------------------------------------------</br>
+          <p class="text-warning"> Total equipos: <%= @precio_instrumentos %></p>
+          </br>
+            <% if @booking.amount == 0 %>
+              <p class="text-error"> Total Deuda : <%= @precio_instrumentos + @deuda_salas %> </p>
+            <%end%>
+          <%end%>
+
+          <% if @booking.amount != 0 %>
+          </br>
+          Reserva confirmada</br>
+          ------------------------------------------</br>
+          <p class="text-success"> Confirmado con : <%= @booking.amount %></p>
+          </br>
+          <p class="text-error"> Total Deuda : <%= @precio_instrumentos + @deuda_salas - @booking.amount %> </p>
+          <%end%>
+          
+
+          
+          
+          </br>
+
+          <% if @assistant.count != 0 %> 
+            <% if @equipos.tools.count != 0 %>
+              <p class="text-info">Si quieres puede ingresar mas asistentes y </br>solicitar mas equipos y/o accesorios para tu ensayo</p>
+            <%else%>
+              <p class="text-error">Tienes que terminar los pasos que</br> faltan para completar tu reserva</p>
+            <%end%>
+          <%else%>
+            <p class="text-error">Tienes que terminar los pasos que</br> faltan para completar tu reserva</p>
+          <%end%>
+          
+
+          </br></br>
+          <p class="text-error">Para confirmar tu reserva tienes que abonar </br>la mitad del valor de reserva</p>
+
+
+      </div> <!-- span4 -->
+      <div class="span5">
+        <% if @assistant.count == 0 %> 
+          <center><h3>Termina Paso 3/4: Personas que asistiran</h3></br></center>
+        <%else%>
+          <center><h3><p class='icon-ok text-info'></p> Personas que asistiran</h3></br></center>          
+        <%end%>
+
+        <table>
+          <% if @assistant.count != 0 %> 
+          <tr>
+            <td>nombre</td>
+            <td>instrumento</td>
+          </tr>
+          <%else%>
+            <center><h5>no hay asistentes registrados, registra quien vendra contigo</h5></center>
+          <%end%>
+         
+          <% @assistant.each do |a| %>
+          <tr>
+            <td><%= link_to a.name,booking_assistant_path(@booking,a.id)  %></td>
+            <td><%= a.instrument %></td>
+          </tr>
+          <% end %>
+        </table></br>
+          <% if @booking.estate != "Finalizado" %>
+            <%= link_to t('.asistente', :default => t(" Agregar Asistente ")), new_booking_assistant_path(@booking.id),    
+            :class => 'icon-plus-sign btn' %>
+          <% end %>
+        </br></br></br>
+
+
+        <% if @equipos.tools.count != 0 %>
+          <center><h3><p class='icon-ok text-info'></p>  Equipos y/o accesorios para tu ensayo</h3></br></center>
+        <%else%>
+          <center><h3>Termina Paso 4/4: Equipos y/o accesorios para tu ensayo</h3></br></center>          
+        <%end%>
+
+
+        <% if @equipos.tools.count == 0 %>
+           <center><h5>si deseas solicitar un equipo y/o accesorio musical ingresar en solicitar equipos </h5></center>
+        <%else%>
+          Cantidad de equipos solicitados: </br>
+          <% @equipos.tools.each do |tool| %>
+            <%= tool.name %>
+            <%= tool.price_unitary %>
+            </br>                     
+            
+          <%end%>
+        <%end%>
+        </br></br>
+          <% if @booking.estate != "Finalizado" %>
+            <%= link_to t('.tool', :default => t(" Solicitar Equipo ")), AsignarTool_path(@booking.id),      
+            :class => 'icon-plus-sign btn' %>
+          <%end%>
+      </div> <!-- span6 -->
+    </div> <!-- row -->
+  </div> <!-- span12 -->
+</div>  <!-- row -->

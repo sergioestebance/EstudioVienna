@@ -1,0 +1,53 @@
+<%- model_class = Booking -%>
+<div class="page-header">
+  <center><h2>Lista de solicitudes de reservas</h2></center>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>  </th>
+      <th><%= model_class.human_attribute_name(:"fecha de reserva") %></th>
+      <th><%= model_class.human_attribute_name(:"Horas solicitadas") %></th>
+      <th><%= model_class.human_attribute_name(:"Sala n°") %></th>
+      <th><%= model_class.human_attribute_name(:"fecha envio solicitud") %></th>
+      <% if current_user %>
+        <% if current_user.user_type_id == 1 %>
+          <th><%= model_class.human_attribute_name(:"Nombre Usuario") %></th>
+        <% end %>
+      <% end %>
+      </tr>
+  </thead>
+  <tbody>
+    <% @bookings.each do |booking| %>
+      <% @book = Booking.includes(:horas).find(booking.id) %>    
+      <tr>
+        <td><%=link_to booking.id, booking_path(booking)  %></td>
+        <td><%= booking.fecha.day %>/<%= booking.fecha.month %>/<%= booking.fecha.year %> </td>
+        <td>
+          <% @book.horas.each do |hora| %>
+            <%= hora.startTime %> a <%= hora.endTime %></br>
+          <%end%>
+        </td>
+        <td><%= booking.room_id %></td>
+        <td><%= booking.created_at.strftime("%d /%m / %Y") %></td>
+        <% if current_user %>
+          <% if current_user.user_type_id == 1 %>
+            <td><%= booking.user.name %><%= booking.user.lastname %></td>
+          <% end %>
+        <% end %>
+        <td>
+          <% if current_user %>
+            <% if current_user.user_type_id == 2 %>
+              <%= link_to "Ver Solicitud", booking_path(booking), :class => 'btn btn-mini'  %>
+            <% else %> 
+              <%= link_to t('.confirmar', :default => t("helpers.links.confirmar")),
+                      confirmarSolicitud_path(booking), :class => 'btn btn-mini' %>  
+            <% end %>
+          <% end %>         
+          <%= link_to 'Cancelar', cancelarSolicitud_path(booking), data: { confirm: "¿Estas seguro que deseas cancelar la solicitud para el #{booking.created_at.strftime('%d/%B/%Y')}?" }, :class => 'btn btn-mini btn-danger'%>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,47 @@
+<%= form_for @booking, :html => { :class => 'form-horizontal' }, :validate => true do |f| %>
+
+<div class="control-group">
+  <%= f.label :fecha, :class => 'control-label' %>
+  <div class="controls">
+    <% if @opcion == "new"%>
+      <%= f.text_field :fecha1, :value =>"#{@day}/#{@month}/#{@year}",:disabled => 'disabled',:class => 'text_field' %>
+      <%= hidden_field_tag :fecha, @fecha  %>
+    <% else%>
+        <%= f.text_field :fecha1, :value =>"#{@day}/#{@month}/#{@year}",:disabled => 'disabled',:class => 'text_field' %>
+      <%= hidden_field_tag :fecha, @fecha  %>
+    <% end%>
+  </div>
+</div>
+
+<div class="control-group">
+  <%= f.label :"Horas a arrendar", :class => 'control-label' %>
+ <div class="controls">
+   <%= f.collection_select :hora_ids, Hora.order(:name), :id, :name ,  {}, 
+    {multiple: true} %>
+  <p class="text-info"><%= f.label :"Importante: Escriba la hora de inicio que desea ensayar ej: 11 " %></P>
+ </div>
+</div>
+
+<div class="control-group">
+  <%= f.label :"Sala de ensayo N°", :class => 'control-label' %>
+  <div class="controls">
+    <select name="booking[room_id]">
+      <% @rooms.each do |room| %>
+      <option value="<%= room.id %>">
+        <%= room.id %>
+      </option> 
+      <% end %>
+    </select>
+  </div>
+</div>
+<div class="form-actions">
+  <%= f.button @boton, :class => 'btn-primary' %>
+  <%= link_to t('.cancel', :default => t("helpers.links.cancelar")),
+              bookings_path, :class => 'btn' %>
+  <% if current_user %>
+    <%= hidden_field_tag :userid, current_user.id  %>
+  <% end %>
+</div>
+
+<% end %>
+
